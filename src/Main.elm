@@ -83,10 +83,13 @@ sortCountries pinned countries =
         pinnedCountries =
             pinned
                 |> List.map (\name -> Dict.get name countryDict)
-                |> List.map (\country -> Maybe.withDefault (Country "" "") country)
+                |> List.map
+                    (\country -> Maybe.withDefault (Country "" "") country)
 
         unpinnedCountries =
             countries
+                |> List.filter
+                    (\country -> not (List.member country.code pinnedCountryList))
                 |> List.sortBy .display
     in
         pinnedCountries ++ unpinnedCountries
