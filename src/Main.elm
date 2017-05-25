@@ -69,28 +69,33 @@ update msg model =
 -- View
 
 
-sortCountries : List String -> List Country -> List Country
-sortCountries pinned countries =
+extractPinnedCountries : List String -> List Country -> List Country
+extractPinnedCountries pinned countries =
     let
         countryDict =
             countries
                 |> List.map (\country -> ( country.code, country ))
                 |> Dict.fromList
-
-        pinnedCountries =
-            pinned
-                |> List.map (\name -> Dict.get name countryDict)
-                |> List.filter (\country -> country /= Nothing)
-                |> List.map
-                    (\country -> Maybe.withDefault (Country "" "") country)
-
-        unpinnedCountries =
-            countries
-                |> List.filter
-                    (\country -> not (List.member country.code pinnedCountryList))
-                |> List.sortBy .display
     in
-        pinnedCountries ++ unpinnedCountries
+        pinned
+            |> List.map (\name -> Dict.get name countryDict)
+            |> List.filter (\country -> country /= Nothing)
+            |> List.map
+                (\country -> Maybe.withDefault (Country "" "") country)
+
+
+extractUnpinnedCountries : List String -> List Country -> List Country
+extractUnpinnedCountries pinned countries =
+    countries
+        |> List.filter
+            (\country -> not (List.member country.code pinned))
+        |> List.sortBy .display
+
+
+sortCountries : List String -> List Country -> List Country
+sortCountries pinned countries =
+    extractPinnedCountries pinned countries
+        ++ extractUnpinnedCountries pinned countries
 
 
 selectOptions : List Country -> List String -> List (Html Msg)
