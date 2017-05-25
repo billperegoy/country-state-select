@@ -37,12 +37,13 @@ init =
 
 pinnedCountryList : List String
 pinnedCountryList =
-    [ "us", "ca" ]
+    [ "us", "ca", "mx" ]
 
 
 countryList : List Country
 countryList =
     [ Country "fr" "France"
+    , Country "mx" "Mexico"
     , Country "ba" "Bahamas"
     , Country "ca" "Canada"
     , Country "us" "United States"
@@ -71,10 +72,6 @@ update msg model =
 sortCountries : List String -> List Country -> List Country
 sortCountries pinned countries =
     let
-        pinnedTuple =
-            pinned
-                |> List.map (\code -> ( code, Nothing ))
-
         countryDict =
             countries
                 |> List.map (\country -> ( country.code, country ))
@@ -83,6 +80,7 @@ sortCountries pinned countries =
         pinnedCountries =
             pinned
                 |> List.map (\name -> Dict.get name countryDict)
+                |> List.filter (\country -> country /= Nothing)
                 |> List.map
                     (\country -> Maybe.withDefault (Country "" "") country)
 
