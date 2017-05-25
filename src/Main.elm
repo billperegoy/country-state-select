@@ -2,8 +2,7 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Utils
-import Dict
+import Country exposing (..)
 
 
 main : Program Never Model Msg
@@ -18,12 +17,6 @@ main =
 
 
 -- Model
-
-
-type alias Country =
-    { code : String
-    , display : String
-    }
 
 
 type alias Model =
@@ -69,39 +62,10 @@ update msg model =
 -- View
 
 
-extractPinnedCountries : List String -> List Country -> List Country
-extractPinnedCountries pinned countries =
-    let
-        countryDict =
-            countries
-                |> List.map (\country -> ( country.code, country ))
-                |> Dict.fromList
-    in
-        pinned
-            |> List.map (\name -> Dict.get name countryDict)
-            |> List.filter (\country -> country /= Nothing)
-            |> List.map
-                (\country -> Maybe.withDefault (Country "" "") country)
-
-
-extractUnpinnedCountries : List String -> List Country -> List Country
-extractUnpinnedCountries pinned countries =
-    countries
-        |> List.filter
-            (\country -> not (List.member country.code pinned))
-        |> List.sortBy .display
-
-
-sortCountries : List String -> List Country -> List Country
-sortCountries pinned countries =
-    extractPinnedCountries pinned countries
-        ++ extractUnpinnedCountries pinned countries
-
-
 selectOptions : List Country -> List String -> List (Html Msg)
 selectOptions countries pinned =
     countries
-        |> sortCountries pinned
+        |> Country.pinAndSort pinned
         |> List.map (\country -> option [ value country.code ] [ text country.display ])
 
 
