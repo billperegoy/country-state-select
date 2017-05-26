@@ -10,14 +10,14 @@ type alias Country =
 
 
 extractPinned : List String -> List Country -> List Country
-extractPinned pinned countries =
+extractPinned pinnedCountries countries =
     let
         countryDict =
             countries
                 |> List.map (\country -> ( country.code, country ))
                 |> Dict.fromList
     in
-        pinned
+        pinnedCountries
             |> List.map (\name -> Dict.get name countryDict)
             |> List.filter (\country -> country /= Nothing)
             |> List.map
@@ -25,14 +25,14 @@ extractPinned pinned countries =
 
 
 extractUnpinned : List String -> List Country -> List Country
-extractUnpinned pinned countries =
+extractUnpinned pinnedCountries countries =
     countries
         |> List.filter
-            (\country -> not (List.member country.code pinned))
+            (\country -> not (List.member country.code pinnedCountries))
         |> List.sortBy .display
 
 
 pinAndSort : List String -> List Country -> List Country
-pinAndSort pinned countries =
-    extractPinned pinned countries
-        ++ extractUnpinned pinned countries
+pinAndSort pinnedCountries countries =
+    extractPinned pinnedCountries countries
+        ++ extractUnpinned pinnedCountries countries
